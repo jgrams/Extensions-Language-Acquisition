@@ -219,5 +219,17 @@ $(document).ready(function() {
 	    });
 	});
 
+	//adds the current url to an field in popup so the user can see what they are untranslating
+    chrome.tabs.query({
+	    active: true,
+	    currentWindow: true
+	    }, function(tabs) {
+	    	//tabs[0] returns the current url, then rest stripped to the domain
+	        var currentUrl = $('<a>').prop('href', tabs[0].url).prop('hostname');
+	        //send the current url to localstorage to be saved
+            $("#untranslateUrl").val(currentUrl);
+        }
+	);
+
 	
 });
