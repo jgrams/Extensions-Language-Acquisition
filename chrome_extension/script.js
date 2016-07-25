@@ -184,4 +184,40 @@ $(document).ready(function() {
 	          	}
 	        }
 		});
+
+		//function to add the current active tab url to an array (so it can be removed from translation)
+	$("#untranslateButton").click(function() {
+	    chrome.tabs.query({
+	      active: true,
+	      currentWindow: true
+	      }, function(tabs) {
+	      	//tabs[0] returns the current url, the rest of the code strips it to the domain
+	        var currentUrl = $('<a>').prop('href', tabs[0].url).prop('hostname');
+	        //send the current url to localstorage to be saved
+	        chrome.storage.sync.get("UNTRANSLATED_PAGES", function(obj) {
+	        //if untranslated pages array doesn't exist, create it and add the current url
+	        if (!obj["UNTRANSLATED_PAGES"]) {
+	        	var array = [];
+	        	array.unshift(currentUrl);
+	        	var jsonObj = {};
+	        	jsonObj["UNTRANSLATED_PAGES"] = array;
+	        	chrome.storage.sync.set(jsonObj, function() {
+	          });
+	        //checks if the current url is already in the array, in which case do nothing
+	        } else if ($.inArray(currentUrl, obj["UNTRANSLATED_PAGES"]) !== -1) {
+	        //or adds the current url to the array
+	        } else {
+	       		var array = obj["UNTRANSLATED_PAGES"];
+	       		array.unshift(currentUrl);
+	       		var jsonObj = {};
+	       		jsonObj["UNTRANSLATED_PAGES"] = array;
+	       		console.log(JSON.stringify(jsonObj));
+	       		chrome.storage.sync.set(jsonObj, function() {
+	          	});
+	       	}
+	        });
+	    });
+	});
+
+	
 });
