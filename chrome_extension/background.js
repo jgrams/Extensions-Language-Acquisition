@@ -135,3 +135,25 @@ function setVoice(targetLang) {
 		});
 	});
 }
+
+//programatically inject the content script and related js.css when
+//the current tab's domain doesn't exist in the "UNTRANSLATED_PAGES" array
+chrome.tabs.onActivated.addListener(function (tabId){
+    chrome.tabs.onUpdated.addListener(function (tabId, url, tab) {
+        chrome.storage.sync.get("UNTRANSLATED_PAGES", function(obj) { 
+            //inArray returns index of object, so will return -1 if doesn't exist in array
+            if ($.inArray(url, obj["UNTRANSLATED_PAGES"]) == -1) { 
+                chrome.tabs.executeScript(tabId, {file: "jquery-1.11.3.min.js"}, function(results1){ 
+                    chrome.tabs.executeScript(tabId, {file: "jquery-ui.min.js"}, function(results2){
+                        chrome.tabs.executeScript(tabId, {file: "myScript.js"}, function(results3){
+                            chrome.tabs.insertCSS(tabId, {file: "jquery-ui.css"}, function (results4){
+                                chrome.tabs.insertCSS(tabId, {file: "spkeasy.css"}, function (results5){
+                                });
+                            });
+                        });
+                    });
+                }); 
+            }
+        }); 
+    });    
+});
